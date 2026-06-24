@@ -1,8 +1,8 @@
 // ! Auto Imports are not supported in this file
 
 import { parseCidr } from 'cidr-tools';
-import { stringifyIp } from 'ip-bigint';
 import { removeNewlines } from './template';
+import { stringifyIp, parseIp } from 'ip-bigint';
 
 import type { ClientType } from '#db/repositories/client/types';
 import type { InterfaceType } from '#db/repositories/interface/types';
@@ -51,8 +51,30 @@ AllowedIPs = ${allowedIps.join(', ')}${extraLines.length ? `\n${extraLines.join(
 
     const cidr4 = parseCidr(wgInterface.ipv4Cidr);
     const cidr6 = parseCidr(wgInterface.ipv6Cidr);
-    const ipv4Addr = stringifyIp({ number: cidr4.start + 1n, version: 4 });
-    const ipv6Addr = stringifyIp({ number: cidr6.start + 1n, version: 6 });
+
+    // IPv4: Allow User-defined IP if valid, otherwise use network + 1
+    let ipv4Addr: string;
+    {
+      const userIp = wgInterface.ipv4Cidr.split('/')[0]!;
+      const userIpNum = parseIp(userIp).number;
+      if (userIpNum > cidr4.start && userIpNum < cidr4.end) {
+        ipv4Addr = userIp; // valid
+      } else {
+        ipv4Addr = stringifyIp({ number: cidr4.start + 1n, version: 4 }); // use default IP
+      }
+    }
+
+    // IPv6: Allow User-defined IP if valid, otherwise use network + 1
+    let ipv6Addr: string;
+    {
+      const userIp = wgInterface.ipv6Cidr.split('/')[0]!;
+      const userIpNum = parseIp(userIp).number;
+      if (userIpNum !== cidr6.start) {
+        ipv6Addr = userIp; // valid
+      } else {
+        ipv6Addr = stringifyIp({ number: cidr6.start + 1n, version: 6 }); // use default IP
+      }
+    }
 
     const address =
       `${ipv4Addr}/${cidr4.prefix}` +
@@ -253,3 +275,4 @@ Endpoint = ${userConfig.host}:${userConfig.port}`;
       });
   },
 };
+
