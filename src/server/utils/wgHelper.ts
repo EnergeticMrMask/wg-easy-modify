@@ -1,9 +1,14 @@
-// ! Auto Imports are not supported in this file
-
 import { parseCidr } from 'cidr-tools';
-import { removeNewlines } from './template';
+// <<<<<<< HEAD
+// import { removeNewlines } from './template';
 import { stringifyIp, parseIp } from 'ip-bigint';
+// =======
+// import { stringifyIp } from 'ip-bigint';
+// >>>>>>> 273bf7028ae33a35c8c20b01b9612fe91dc84a71
 
+import { removeNewlines, iptablesTemplate } from '#server/utils/template';
+import { exec } from '#server/utils/cmd';
+import { WG_ENV } from '#server/utils/config';
 import type { ClientType } from '#db/repositories/client/types';
 import type { InterfaceType } from '#db/repositories/interface/types';
 import type { UserConfigType } from '#db/repositories/userConfig/types';
