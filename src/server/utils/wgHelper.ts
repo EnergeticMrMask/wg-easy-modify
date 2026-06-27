@@ -1,10 +1,5 @@
 import { parseCidr } from 'cidr-tools';
-// <<<<<<< HEAD
-// import { removeNewlines } from './template';
 import { stringifyIp, parseIp } from 'ip-bigint';
-// =======
-// import { stringifyIp } from 'ip-bigint';
-// >>>>>>> 273bf7028ae33a35c8c20b01b9612fe91dc84a71
 
 import { removeNewlines, iptablesTemplate } from '#server/utils/template';
 import { exec } from '#server/utils/cmd';
